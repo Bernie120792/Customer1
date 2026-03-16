@@ -1,1 +1,106 @@
-<html> Hello customer 1</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central Client Login</title>
+<style>
+body { 
+  font-family: Arial; 
+  background:#0f172a; 
+  color:white; 
+  display:flex; 
+  justify-content:center; 
+  align-items:center; 
+  height:100vh; 
+  margin:0; 
+}
+.container { 
+  background:#1e293b; 
+  padding:30px; 
+  border-radius:12px; 
+  width:90%; 
+  max-width:400px; 
+  text-align:center; 
+}
+input { 
+  width:100%; 
+  padding:12px; 
+  margin:10px 0; 
+  border-radius:6px; 
+  border:none; 
+  font-size:16px; 
+}
+button { 
+  width:100%; 
+  padding:12px; 
+  border:none; 
+  border-radius:6px; 
+  background:#3b82f6; 
+  color:white; 
+  font-size:16px; 
+  cursor:pointer; 
+  margin-top:10px; 
+}
+button:hover { 
+  background:#2563eb; 
+}
+.error { 
+  color:#f87171; 
+  margin-top:10px; 
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Central Login</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="mpin" placeholder="MPIN">
+  <button onclick="login()">Login</button>
+  <div class="error" id="error"></div>
+</div>
+
+<script>
+let clients = [];
+
+// Load clients from Google Apps Script
+function loadClients() {
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwvFSK_-3K0ZcomEP1Hf8Cf92fbjU2hM3Af7EJBH90L1QoJ8ceYW9t8vksMmnahzKKj/exec?callback=clientsLoaded";
+  const script = document.createElement('script');
+  script.src = scriptURL;
+  document.body.appendChild(script);
+}
+
+// Callback when data is loaded
+function clientsLoaded(data) {
+  clients = data.map(c => ({
+    username: c.username.toString().trim(),
+    mpin: c.mpin.toString().trim(),
+    url: c.url.toString().trim()
+  }));
+  console.log("Loaded clients:", clients); // Debug
+}
+
+function login() {
+  const user = document.getElementById("username").value.trim();
+  const pin = document.getElementById("mpin").value.trim();
+  const errorDiv = document.getElementById("error");
+
+  const client = clients.find(c => 
+    c.username === user && 
+    c.mpin === pin
+  );
+
+  if(client) {
+    errorDiv.textContent = "";
+    window.location.href = client.url;
+  } else {
+    errorDiv.textContent = "Invalid username or MPIN";
+  }
+}
+
+// Load clients on page load
+loadClients();
+</script>
+</body>
+</html>
